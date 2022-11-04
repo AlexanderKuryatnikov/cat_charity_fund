@@ -1,5 +1,7 @@
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Optional
 
 from app.crud.base import CRUDBase
 from app.models import CharityProject
@@ -10,6 +12,18 @@ class CRUDCharityProject(CRUDBase[
     CharityProject,
     CharityProjectCreate,
 ]):
+
+    async def get(
+            self,
+            project_id: int,
+            session: AsyncSession,
+    ) -> Optional[CharityProject]:
+        charity_project = await session.execute(
+            select(CharityProject).where(
+                CharityProject.id == project_id
+            )
+        )
+        return charity_project.scalars().first()
 
     async def update(
             self,
@@ -36,3 +50,18 @@ class CRUDCharityProject(CRUDBase[
         await session.delete(db_charity_project)
         await session.commit()
         return db_charity_project
+
+    async def get_project_id_by_name(
+            self,
+            project_name: str,
+            session: AsyncSession,
+    ) -> Optional[int]:
+        charity_project = await session.execute(
+            select(CharityProject.id).where(
+                CharityProject.name == project_name
+            )
+        )
+        return charity_project.scalars().first()
+
+
+charity_project_crud = CRUDCharityProject(CharityProject)
