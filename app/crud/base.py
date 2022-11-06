@@ -36,3 +36,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
         await session.commit()
         await session.refresh(db_obj)
         return db_obj
+
+    async def get_active(
+            self,
+            session: AsyncSession,
+    ) -> List[ModelType]:
+        db_objs = session.execute(
+            select(self.model).where(
+                self.model.fully_invested
+            )
+        )
+        return db_objs.scalars().all()
