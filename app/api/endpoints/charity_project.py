@@ -6,9 +6,11 @@ from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charity_project import charity_project_crud
 from app.schemas.charity_project import (
-    CharityProjectCreate, CharityProjectDB,  # CharityProjectUpdate
+    CharityProjectCreate, CharityProjectDB, CharityProjectUpdate
 )
-from .validators import check_name_duplicate, check_project_exists, check_project_not_invested
+from .validators import (
+    check_project_before_edit, check_project_before_deletion, check_name_duplicate
+)
 
 router = APIRouter()
 
@@ -57,8 +59,32 @@ async def delete_charity_project(
     Только для суперюзеров.
     Удаляет проект. Нельзя удалить проект, в который уже были инвестированы средства, его можно только закрыть.
     """
-    charity_project = await check_project_exists(project_id, session)
-    await check_project_not_invested(charity_project.invested_amount, session)
-
+    charity_project = await check_project_before_deletion(project_id, session)
     charity_project = await charity_project_crud.remove(charity_project, session)
+    return charity_project
+
+
+@router.patch(
+    '/{project_id}',
+    response_model=CharityProjectDB,
+    dependencies=[Depends(current_superuser)]
+)
+async def update_charity_project(
+        project_id: int,
+        obj_in: CharityProjectUpdate,
+        session: AsyncSession = Depends(get_async_session),
+):
+    """
+    Только для суперюзеров.
+    Закрытый проект нельзя редактировать, также нельзя установить требуемую сумму меньше уже вложенной.
+    """
+    if obj_in.name is not None:
+        await check_name_duplicate(obj_in.name, session)
+    charity_project = await check_project_before_edit(
+        project_id, session, obj_in.full_amount
+    )
+
+    charity_project = await charity_project_crud.update(
+        charity_project, obj_in, session
+    )
     return charity_project
