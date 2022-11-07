@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from http import HTTPStatus
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Union
+from typing import Optional
 
 from app.crud.charity_project import charity_project_crud
 from app.models import CharityProject
@@ -40,7 +40,7 @@ async def check_project_before_deletion(
 async def check_project_before_edit(
         project_id: int,
         session: AsyncSession,
-        obj_in_full_amount: Union(int, None)
+        obj_in_full_amount: Optional[int]
 
 ) -> CharityProject:
     charity_project = await charity_project_crud.get(project_id, session)

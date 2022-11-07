@@ -5,5 +5,9 @@ class UserRead(schemas.BaseUser[int]):
     pass
 
 
-class UserCreateOrUpdate(schemas.BaseUserCreate):
+class UserCreate(schemas.BaseUserCreate):
+    pass
+
+
+class UserUpdate(schemas.BaseUserCreate):
     pass

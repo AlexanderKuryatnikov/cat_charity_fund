@@ -17,7 +17,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
 
     async def get_all(
             self,
-            session: AsyncSession
+            session: AsyncSession,
     ) -> List[ModelType]:
         db_objs = await session.execute(select(self.model))
         return db_objs.scalars().all()

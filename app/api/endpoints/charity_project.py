@@ -43,7 +43,7 @@ async def create_charity_project(
     """
     await check_name_duplicate(charity_project.name, session)
     new_charity_project = await charity_project_crud.create(charity_project, session)
-    await calculate_investment(new_charity_project)
+    await calculate_investment(new_charity_project, session)
     return new_charity_project
 
 

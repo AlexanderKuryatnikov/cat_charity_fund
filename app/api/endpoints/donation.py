@@ -43,7 +43,7 @@ async def create_donation(
     new_donation = await donation_crud.create(
         donation, session, user
     )
-    await calculate_investment(new_donation)
+    await calculate_investment(new_donation, session)
     return new_donation
 
 

@@ -21,7 +21,7 @@ class CharityProjectCreate(CharityProjectBase):
 class CharityProjectUpdate(CharityProjectBase):
 
     @root_validator
-    def correct_full_amount(self, values):
+    def fields_cant_be_none(cls, values):
         for value in values.items():
             if value is None:
                 raise ValueError('Значение не может быть пустым')
