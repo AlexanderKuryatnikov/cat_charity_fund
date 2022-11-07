@@ -14,8 +14,8 @@ async def check_name_duplicate(
     project_id = await charity_project_crud.get_project_id_by_name(project_name, session)
     if project_id is not None:
         raise HTTPException(
-            status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
-            detail='Проект с таким названием уже существует!'
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Проект с таким именем уже существует!'
         )
 
 
@@ -31,8 +31,8 @@ async def check_project_before_deletion(
         )
     if charity_project.invested_amount > 0:
         raise HTTPException(
-            status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
-            detail='В проект уже внесены средства!'
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='В проект были внесены средства, не подлежит удалению!'
         )
     return charity_project
 
