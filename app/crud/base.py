@@ -41,7 +41,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
             self,
             session: AsyncSession,
     ) -> List[ModelType]:
-        db_objs = session.execute(
+        db_objs = await session.execute(
             select(self.model).where(
                 self.model.fully_invested
             )
