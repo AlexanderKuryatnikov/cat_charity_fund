@@ -1,30 +1,41 @@
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Union
 
 from app.crud.charity_project import charity_project_crud
+from app.crud.donation import donation_crud
 from app.models import CharityProject, Donation
 
 
-async def new_donation_investment(
-        new_donation: Donation,
+async def calculate_investment(
+        new_investment: Union[CharityProject, Donation],
         session: AsyncSession,
 ) -> None:
-    amount_left = new_donation.full_amount
-    active_projects = await charity_project_crud.get_active(session)
-    for project in active_projects:
-        amount_to_invest = project.full_amount - project.invested_amount
+    amount_left = new_investment.full_amount
+    if type(new_investment) is Donation:
+        active_objs = await charity_project_crud.get_active(session)
+    else:
+        active_objs = await donation_crud.get_active(session)
+
+    for active_obj in active_objs:
+        amount_to_invest = active_obj.full_amount - active_obj.invested_amount
         if amount_to_invest >= amount_left:
-            project.invested_amount += amount_left
             if amount_to_invest == amount_left:
-                project.fully_invested = True
-                project.close_date = datetime.now()
-            new_donation.invested_amount = new_donation.full_amount
-            new_donation.fully_invested = True
-            new_donation.close_date = datetime.now()
+                close_investment(active_obj)
+            else:
+                active_obj.invested_amount += amount_left
+            close_investment(new_investment)
             break
         else:
-            project.invested_amount = project.full_amount
-            project.fully_invested = True
-            project.close_date = datetime.now()
-            new_donation.invested_amount += amount_to_invest
+            close_investment(active_obj)
+            new_investment.invested_amount += amount_to_invest
             amount_left -= amount_to_invest
+
+    await session.commit()
+    await session.refresh(new_investment)
+
+
+def close_investment(investment_obj: Union[CharityProject, Donation]) -> None:
+    investment_obj.invested_amount = investment_obj.full_amount
+    investment_obj.fully_invested = True
+    investment_obj.close_date = datetime.now()
