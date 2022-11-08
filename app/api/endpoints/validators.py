@@ -48,6 +48,11 @@ async def check_project_before_edit(
             status_code=HTTPStatus.NOT_FOUND,
             detail='Проект не найден!'
         )
+    if charity_project.fully_invested:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Закрытый проект нельзя редактировать!'
+        )
     if obj_in_full_amount is not None:
         if obj_in_full_amount < charity_project.invested_amount:
             raise HTTPException(
