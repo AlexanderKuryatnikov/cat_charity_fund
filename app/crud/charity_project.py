@@ -37,6 +37,9 @@ class CRUDCharityProject(CRUDBase[
         for field in charity_project_data:
             if field in update_data:
                 setattr(db_charity_project, field, update_data[field])
+        if db_charity_project.invested_amount == db_charity_project.full_amount:
+            db_charity_project.fully_invested = True
+
         session.add(db_charity_project)
         await session.commit()
         await session.refresh(db_charity_project)
