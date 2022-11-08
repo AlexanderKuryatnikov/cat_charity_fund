@@ -40,8 +40,7 @@ async def check_project_before_deletion(
 async def check_project_before_edit(
         project_id: int,
         session: AsyncSession,
-        obj_in_full_amount: Optional[int]
-
+        obj_in_full_amount: Optional[int] = None,
 ) -> CharityProject:
     charity_project = await charity_project_crud.get(project_id, session)
     if charity_project is None:
@@ -55,3 +54,4 @@ async def check_project_before_edit(
                 status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
                 detail='Новая сумма меньше уже внесённой!'
             )
+    return charity_project
