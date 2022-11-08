@@ -13,7 +13,7 @@ class DonationCreate(BaseModel):
 
 class DonationDB(DonationCreate):
     id: int
-    user_id: str
+    user_id: int
     invested_amount: int
     fully_invested: bool
     create_date: datetime
