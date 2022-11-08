@@ -43,7 +43,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
     ) -> List[ModelType]:
         db_objs = await session.execute(
             select(self.model).where(
-                self.model.fully_invested
+                self.model.fully_invested.is_(False)
             )
         )
         return db_objs.scalars().all()

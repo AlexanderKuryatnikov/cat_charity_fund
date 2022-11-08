@@ -16,6 +16,7 @@ async def calculate_investment(
         active_objs = await charity_project_crud.get_active(session)
     else:
         active_objs = await donation_crud.get_active(session)
+    active_objs.sort(key=lambda obj: obj.create_date)
 
     for active_obj in active_objs:
         amount_to_invest = active_obj.full_amount - active_obj.invested_amount
