@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,6 +40,7 @@ class CRUDCharityProject(CRUDBase[
                 setattr(db_charity_project, field, update_data[field])
         if db_charity_project.invested_amount == db_charity_project.full_amount:
             db_charity_project.fully_invested = True
+            db_charity_project.close_date = datetime.now()
 
         session.add(db_charity_project)
         await session.commit()
