@@ -32,7 +32,9 @@ async def get_all_donations(
     '/',
     response_model=DonationDB,
     response_model_exclude_none=True,
-    response_model_exclude={'user_id', 'invested_amount', 'fully_invested', 'close_date'}
+    response_model_exclude={
+        'user_id', 'invested_amount', 'fully_invested', 'close_date'
+    }
 )
 async def create_donation(
         donation: DonationCreate,
@@ -51,7 +53,9 @@ async def create_donation(
     '/my',
     response_model=List[DonationDB],
     response_model_exclude_none=True,
-    response_model_exclude={'user_id', 'invested_amount', 'fully_invested', 'close_date'}
+    response_model_exclude={
+        'user_id', 'invested_amount', 'fully_invested', 'close_date'
+    }
 )
 async def get_user_donations(
         session: AsyncSession = Depends(get_async_session),
