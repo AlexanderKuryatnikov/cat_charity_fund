@@ -25,8 +25,7 @@ async def get_all_charity_projects(
         session: AsyncSession = Depends(get_async_session),
 ):
     """Получает список всех проектов."""
-    all_charity_projects = await charity_project_crud.get_all(session)
-    return all_charity_projects
+    return await charity_project_crud.get_all(session)
 
 
 @router.post(
@@ -60,7 +59,8 @@ async def delete_charity_project(
 ):
     """
     Только для суперюзеров.
-    Удаляет проект. Нельзя удалить проект, в который уже были инвестированы средства, его можно только закрыть.
+    Удаляет проект. Нельзя удалить проект,
+    в который уже были инвестированы средства, его можно только закрыть.
     """
     charity_project = await check_project_before_deletion(project_id, session)
     charity_project = await charity_project_crud.remove(charity_project, session)
@@ -79,7 +79,8 @@ async def update_charity_project(
 ):
     """
     Только для суперюзеров.
-    Закрытый проект нельзя редактировать, также нельзя установить требуемую сумму меньше уже вложенной.
+    Закрытый проект нельзя редактировать,
+    также нельзя установить требуемую сумму меньше уже вложенной.
     """
     if obj_in.name is not None:
         await check_name_duplicate(obj_in.name, session)
